@@ -9,8 +9,8 @@ using namespace std;
 //`sdl-config --libs`
 //-lSDLmain -lSDL -lSDL_image -lSDL_ttf
 
-const int SCREEN_WIDTH = 751;
-const int SCREEN_HEIGHT = 761;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 800;
 const int SCREEN_BPP=32;
 const int NB_CANARD_TO_WIN = 6;
 const int NB_CANARD_PAR_NIVEAU = 10;
@@ -138,7 +138,7 @@ int main ( int argc, char** argv )
     SDL_Init(SDL_INIT_EVERYTHING);
     screen=SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,
             SCREEN_BPP,SDL_SWSURFACE);
-    ecran=load_image("menu.bmp");
+    ecran=load_image("menu1.bmp");
     background=load_image("backGameBlit.bmp");
 
     int menu = 0;
@@ -189,7 +189,6 @@ int main ( int argc, char** argv )
 
         else if(event.type == SDL_KEYUP )
         {
-          //associons pour chaque flèche directionnelle un déplacement plus important
            switch( event.key.keysym.sym )
            {
               case SDLK_UP: showMessageScreen(mssg3.str(),130,250,fonts,fontSize,textColor,screen); break;
@@ -214,7 +213,7 @@ int main ( int argc, char** argv )
             SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
             applySurface(0,0,background,screen,NULL);
             SDL_FreeSurface(screen);
-        SDL_Flip(screen);
+            SDL_Flip(screen);
         }
 
         SDL_FreeSurface(screen);
