@@ -1,0 +1,101 @@
+nt main ( int argc, char** argv )
+{
+    bool quit=false;
+    SDL_Surface *screen, *ecran, *background;
+    SDL_Event event;
+    TTF_Init();
+    TTF_Font *fonts;
+    int fontSize=50;
+    string police="duck_hunt.ttf";
+    SDL_Color textColor={255,255,255};
+    fonts = TTF_OpenFont(police.c_str(),fontSize);
+    SDL_Init(SDL_INIT_EVERYTHING);
+    screen=SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,
+            SCREEN_BPP,SDL_SWSURFACE);
+    ecran=load_image("menu1.bmp");
+    background=load_image("back.bmp");
+
+
+    canard j1;
+    initCanard(j1);
+
+    int menu = 0;
+    int select=0;
+    while (!quit && menu==0)
+    {
+        SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
+        applySurface(0,0,ecran,screen,NULL);
+
+
+        ostringstream mssg;
+        ostringstream mssg1;
+        ostringstream mssg2;
+        ostringstream mssg3;
+
+        mssg.flush();
+        mssg.str("mode classique");
+        mssg1.flush();
+        mssg1.str("quit");
+        mssg2.flush();
+        mssg2.str("DUCK HUNT");
+        mssg3.flush();
+        mssg3.str("-->");
+
+        showMessageScreen(mssg.str(),190,250,fonts,fontSize,textColor,screen);
+        showMessageScreen(mssg1.str(),320,310,fonts,fontSize,textColor,screen);
+        showMessageScreen(mssg2.str(),10,10,fonts,fontSize,textColor,screen);
+
+        while(SDL_PollEvent(&event))
+            if(event.type==SDL_QUIT)
+                quit=true;
+
+        Uint8 *keystates = SDL_GetKeyState( NULL );
+
+        if (keystates[ SDLK_UP ])
+        {
+
+            showMessageScreen(mssg3.str(),130,250,fonts,fontSize,textColor,screen);
+            select=1;
+
+        }
+        if (keystates[ SDLK_DOWN ])
+        {
+
+            showMessageScreen(mssg3.str(),250,310,fonts,fontSize,textColor,screen);
+            select=2;
+        }
+
+        else if(event.type == SDL_KEYUP )
+        {
+           switch( event.key.keysym.sym )
+           {
+              case SDLK_UP: showMessageScreen(mssg3.str(),130,250,fonts,fontSize,textColor,screen); break;
+              case SDLK_DOWN: showMessageScreen(mssg3.str(),250,310,fonts,fontSize,textColor,screen); break;
+           }
+        }
+        if ((keystates[ SDLK_RETURN]) && select==1)
+        {
+            menu=1;
+        }
+        if ((keystates[ SDLK_RETURN]) && select==2)
+        {
+            quit=true;
+        }
+
+        SDL_FreeSurface(screen);
+        SDL_Flip(screen);
+        }
+
+        while (!quit && menu==1)
+        {
+            SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
+            applySurface(0,0,background,screen,NULL);
+            applySurface(0,0,j1.source,screen,NULL);
+            SDL_FreeSurface(screen);
+            SDL_Flip(screen);
+        }
+
+        SDL_FreeSurface(screen);
+        SDL_Flip(screen);
+        SDL_Quit();
+    }
