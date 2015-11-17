@@ -101,7 +101,9 @@ struct canard
     int y;       //position y sur le champ de tir
     int w;
     int h;
-    int mvt;
+    int mvt_x;
+    int mvt_y;
+    int point;
     SDL_Surface *source;
     SDL_Rect lecture;
     SDL_Rect lectureFront;
@@ -114,42 +116,46 @@ struct niveau
 
 void initCanard(canard &c)
 {
-    c.x=rand()%SCREEN_WIDTH;
-    c.y=rand()%SCREEN_HEIGHT;
+    c.x=rand()%SCREEN_WIDTH-50;
+    c.y=rand()%SCREEN_HEIGHT-100;
     c.h=49;
     c.w=53;
     c.c=rand()%3;
-    c.lectureFront.x=0;
-    c.lectureFront.y=0;
-    c.lectureFront.w=49;
-    c.lectureFront.h=53;
-    c.lecture = c.lectureFront;
     if (c.c==0)
     {
-        c.mvt=0;
-        c.source=loadImageWithColorKey("k2.bmp", 144, 208, 136);
+        c.lectureFront.x=0;
+        c.lectureFront.y=0;
+        c.lectureFront.w=49;
+        c.lectureFront.h=49;
+        c.lecture = c.lectureFront;
+        c.mvt_x=1;
+        c.mvt_y=1;
+        c.source=loadImageWithColorKey("k1.bmp", 144, 208, 136);
+        c.point=500;
     }
     else if (c.c==1)
-       {
-            c.mvt=0;
+    {
+        c.lectureFront.x=0;
+        c.lectureFront.y=0;
+        c.lectureFront.w=65;
+        c.lectureFront.h=87;
+        c.lecture = c.lectureFront;
+        c.mvt_x=2;
+        c.mvt_y=2;
         c.source=loadImageWithColorKey("k2.bmp", 144, 208, 136);
-        }
+        c.point=1000;
+    }
     else
     {
-        c.mvt=0;
+        c.lectureFront.x=0;
+        c.lectureFront.y=0;
+        c.lectureFront.w=61;
+        c.lectureFront.h=70;
+        c.lecture = c.lectureFront;
+        c.mvt_x=3;
+        c.mvt_y=3;
         c.source=loadImageWithColorKey("k3.bmp", 144, 208, 136);
-        SDL_Delay(10);
-        c.lectureFront.x=51;
-        c.lectureFront.y=0;
-        c.lectureFront.w=108;
-        c.lectureFront.h=53;
-        c.lecture = c.lectureFront;
-        SDL_Delay(10);
-        c.lectureFront.x=51;
-        c.lectureFront.y=0;
-        c.lectureFront.w=108;
-        c.lectureFront.h=53;
-        c.lecture = c.lectureFront;
-        
+        c.point=1500;
+
     }
 }
