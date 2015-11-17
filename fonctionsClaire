@@ -1,0 +1,155 @@
+SDL_Surface *load_image( std::string filename )
+{
+    //Temporary storage for the image that's loaded
+    SDL_Surface* loadedImage = NULL;
+
+    //The optimized image that will be used
+    SDL_Surface* optimizedImage = NULL;
+    //Load the image
+    loadedImage = SDL_LoadBMP( filename.c_str() );
+    //If nothing went wrong in loading the image
+    if( loadedImage != NULL )
+    {
+        //Create an optimized image
+        optimizedImage = SDL_DisplayFormat( loadedImage );
+
+        //Free the old image
+        SDL_FreeSurface( loadedImage );
+    }
+    //Return the optimized image
+    return optimizedImage;
+}
+
+SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b)
+{
+    //The image that's loaded
+    SDL_Surface* loadedImage = NULL;
+
+    //The optimized image that will be used
+    SDL_Surface* optimizedImage = NULL;
+
+    //Load the image
+    loadedImage = IMG_Load( filename.c_str() );
+
+    //If the image loaded
+    if( loadedImage != NULL )
+    {
+        //Create an optimized image
+        optimizedImage = SDL_DisplayFormat( loadedImage );
+
+        //Free the old image
+        SDL_FreeSurface( loadedImage );
+
+        //If the image was optimized just fine
+        if( optimizedImage != NULL )
+        {
+            //Map the color key
+            Uint32 colorkey = SDL_MapRGB( optimizedImage->format, r, g, b );
+
+            //Set all pixels of color R 0, G 0xFF, B 0xFF to be transparent
+            SDL_SetColorKey( optimizedImage, SDL_SRCCOLORKEY, colorkey );
+        }
+
+
+    }
+    //Return the optimized image
+    return optimizedImage;
+
+}
+
+void applySurface(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip)
+{
+    SDL_Rect offset;
+    offset.x = x;
+    offset.y = y;
+    SDL_BlitSurface( source, clip, destination, &offset );
+}
+
+void showMessageScreen(string message,int x,int y, TTF_Font *font,int fontSize,SDL_Color textColor,SDL_Surface* &screen)
+{
+  string mot="";
+  string space=" ";
+  int i=0,j;
+  SDL_Surface *mes=NULL;
+
+  j = message.find(space);
+  while( j != string::npos )
+  {
+      mot=message.substr(i,j-i);
+      if(mot != "")
+      {
+         mes=TTF_RenderText_Solid(font,mot.c_str(),textColor);
+         applySurface(x,y,mes,screen,NULL);
+         x+=mes->w;
+         SDL_FreeSurface(mes);
+      }
+      x+=fontSize;
+      i=j+1;
+      j = message.find(space,i);
+  }
+
+  mot=message.substr(i);
+  mes=TTF_RenderText_Solid(font,mot.c_str(),textColor);
+  applySurface(x,y,mes,screen,NULL);
+  SDL_FreeSurface(mes);
+}
+struct canard
+{
+    int c;  //0 noir 1 rouge et 2 bleu
+    int v;  //vitesse du canard (pour gérer son déplacement)
+    int x;       //position x sur le champ de tir
+    int y;       //position y sur le champ de tir
+    int w;
+    int h;
+    int mvt;
+    SDL_Surface *source;
+    SDL_Rect lecture;
+    SDL_Rect lectureFront;
+};
+
+struct niveau
+{
+
+};
+
+void initCanard(canard &c)
+{
+    c.x=rand()%SCREEN_WIDTH;
+    c.y=rand()%SCREEN_HEIGHT;
+    c.h=49;
+    c.w=53;
+    c.c=rand()%3;
+    c.lectureFront.x=0;
+    c.lectureFront.y=0;
+    c.lectureFront.w=49;
+    c.lectureFront.h=53;
+    c.lecture = c.lectureFront;
+    if (c.c==0)
+    {
+        c.mvt=0;
+        c.source=loadImageWithColorKey("k2.bmp", 144, 208, 136);
+    }
+    else if (c.c==1)
+       {
+            c.mvt=0;
+        c.source=loadImageWithColorKey("k2.bmp", 144, 208, 136);
+        }
+    else
+    {
+        c.mvt=0;
+        c.source=loadImageWithColorKey("k3.bmp", 144, 208, 136);
+        SDL_Delay(10);
+        c.lectureFront.x=51;
+        c.lectureFront.y=0;
+        c.lectureFront.w=108;
+        c.lectureFront.h=53;
+        c.lecture = c.lectureFront;
+        SDL_Delay(10);
+        c.lectureFront.x=51;
+        c.lectureFront.y=0;
+        c.lectureFront.w=108;
+        c.lectureFront.h=53;
+        c.lecture = c.lectureFront;
+        
+    }
+}
