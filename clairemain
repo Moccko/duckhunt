@@ -15,13 +15,16 @@ int main ( int argc, char** argv )
     ecran=load_image("menu1.bmp");
     background=load_image("back.bmp");
 
-    srand(time(NULL));
+
     canard j1;
     initCanard(j1);
-    cout << "coordonnées canard: " << j1.x << ";" << j1.y << endl;
-    cout << "couleur: " << j1.c << endl;
-    cout << "mouvement: " << j1.mvt << endl;
+    
+    srand(time(NULL));
+    
+    canard j2;
+    initCanard(j2);
 
+    
     int menu = 0;
     int select=0;
     while (!quit && menu==0)
@@ -92,33 +95,66 @@ int main ( int argc, char** argv )
         while (!quit && menu==1)
         {
             SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
+            
             applySurface(0,0,background,screen,NULL);
             applySurface(j1.x,j1.y,j1.source,screen, &j1.lecture);
-            j1.x+=j1.mvt;
-            j1.y+=j1.mvt;
-            if(j1.y+j1.h>SCREEN_HEIGHT)
+            applySurface(j2.x,j2.y,j2.source,screen, &j2.lecture);
+            
+            j1.x+=j1.mvt_x;
+            j1.y+=j1.mvt_y;
+            j2.x+=j2.mvt_x;
+            j2.y+=j2.mvt_y;
+            
+
+            if(j1.y+j1.h>SCREEN_HEIGHT-170)
                   {
-                     j1.y=SCREEN_HEIGHT-j1.h;
-                     j1.mvt*=-1;
+                     j1.y=SCREEN_HEIGHT-170-j1.h;
+                     j1.mvt_y*=-1;
                   }
             if(j1.y<0)
                   {
                      j1.y=0;
-                     j1.mvt*=-1;
+                     j1.mvt_y*=-1;
                   }
             if(j1.x+j1.w>SCREEN_WIDTH)
                   {
                      j1.x=SCREEN_WIDTH-j1.w;
-                     j1.mvt*=-1;
+                     j1.mvt_x*=-1;
                   }
             if(j1.x<0)
                   {
                      j1.x=0;
-                     j1.mvt*=-1;
+                     j1.mvt_x*=-1;
                   }
+
+
+            
+            if(j2.y+j2.h>SCREEN_HEIGHT-170)
+                  {
+                     j2.y=SCREEN_HEIGHT-170-j2.h;
+                     j2.mvt_y*=-1;
+                  }
+            if(j2.y<0)
+                  {
+                     j2.y=0;
+                     j2.mvt_y*=-1;
+                  }
+            if(j2.x+j2.w>SCREEN_WIDTH)
+                  {
+                     j2.x=SCREEN_WIDTH-j2.w;
+                     j2.mvt_x*=-1;
+                  }
+            if(j2.x<0)
+                  {
+                     j2.x=0;
+                     j2.mvt_x*=-1;
+                  }
+            
+            
             SDL_Flip(screen);
             SDL_FreeSurface(screen);
             SDL_Flip(screen);
+            
         }
 
         SDL_FreeSurface(screen);
