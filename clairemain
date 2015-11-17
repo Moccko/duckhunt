@@ -1,4 +1,4 @@
-nt main ( int argc, char** argv )
+int main ( int argc, char** argv )
 {
     bool quit=false;
     SDL_Surface *screen, *ecran, *background;
@@ -15,9 +15,12 @@ nt main ( int argc, char** argv )
     ecran=load_image("menu1.bmp");
     background=load_image("back.bmp");
 
-
+    srand(time(NULL));
     canard j1;
     initCanard(j1);
+    cout << "coordonnées canard: " << j1.x << ";" << j1.y << endl;
+    cout << "couleur: " << j1.c << endl;
+    cout << "mouvement: " << j1.mvt << endl;
 
     int menu = 0;
     int select=0;
@@ -90,7 +93,30 @@ nt main ( int argc, char** argv )
         {
             SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
             applySurface(0,0,background,screen,NULL);
-            applySurface(0,0,j1.source,screen,NULL);
+            applySurface(j1.x,j1.y,j1.source,screen, &j1.lecture);
+            j1.x+=j1.mvt;
+            j1.y+=j1.mvt;
+            if(j1.y+j1.h>SCREEN_HEIGHT)
+                  {
+                     j1.y=SCREEN_HEIGHT-j1.h;
+                     j1.mvt*=-1;
+                  }
+            if(j1.y<0)
+                  {
+                     j1.y=0;
+                     j1.mvt*=-1;
+                  }
+            if(j1.x+j1.w>SCREEN_WIDTH)
+                  {
+                     j1.x=SCREEN_WIDTH-j1.w;
+                     j1.mvt*=-1;
+                  }
+            if(j1.x<0)
+                  {
+                     j1.x=0;
+                     j1.mvt*=-1;
+                  }
+            SDL_Flip(screen);
             SDL_FreeSurface(screen);
             SDL_Flip(screen);
         }
