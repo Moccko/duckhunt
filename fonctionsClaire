@@ -159,3 +159,58 @@ void initCanard(canard &c)
 
     }
 }
+
+bool toucher (canard c, int mx, int my)
+{
+    if ( (mx<c.x+c.w) && (mx>c.x) && (my<c.y+c.h) && (my>c.y))
+    {
+        return true;
+    }
+    else
+        return false;
+}
+
+
+void changerTouche (canard c)
+{
+    if(c.c==0)
+    {
+        c.lectureFront.x=0;
+        c.lectureFront.y=60;
+        c.lectureFront.w=41;
+        c.lectureFront.h=37;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k1.bmp",144, 208, 136);
+    }
+
+
+    else if(c.c==1)
+    {
+        c.lectureFront.x=180;
+        c.lectureFront.y=0;
+        c.lectureFront.w=29;
+        c.lectureFront.h=55;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k2.bmp",144, 208, 136);
+    }
+
+    else
+    {
+        c.lectureFront.x=255;
+        c.lectureFront.y=0;
+        c.lectureFront.w=45;
+        c.lectureFront.h=52;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k3.bmp",144, 208, 136);
+    }
+}
+
+int plusPoints (canard c)
+{
+    if(c.c==0)
+        return 500;
+    else if(c.c==1)
+        return 1000;
+    else
+        return 1500;
+}
