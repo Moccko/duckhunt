@@ -18,13 +18,16 @@ int main ( int argc, char** argv )
 
     canard j1;
     initCanard(j1);
-    
+
     srand(time(NULL));
-    
+
     canard j2;
     initCanard(j2);
 
-    
+
+
+    int score = 0;
+    int nbBall = 3;
     int menu = 0;
     int select=0;
     while (!quit && menu==0)
@@ -95,16 +98,34 @@ int main ( int argc, char** argv )
         while (!quit && menu==1)
         {
             SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
-            
+
             applySurface(0,0,background,screen,NULL);
             applySurface(j1.x,j1.y,j1.source,screen, &j1.lecture);
             applySurface(j2.x,j2.y,j2.source,screen, &j2.lecture);
-            
+
+             ostringstream mssg;
+             ostringstream ball;
+             ostringstream s;
+             mssg.flush();
+             mssg.str("");
+             mssg <<  score;
+
+             ball.flush();
+             ball.str("");
+            ball <<  nbBall;
+
+             s.flush();
+             s.str("Score = ");
+             showMessageScreen(mssg.str(),400,750,fonts,fontSize,textColor,screen);
+             showMessageScreen(s.str(),200,750,fonts,fontSize,textColor,screen);
+             showMessageScreen(ball.str(),50,750,fonts,fontSize,textColor,screen);
+
+
             j1.x+=j1.mvt_x;
             j1.y+=j1.mvt_y;
             j2.x+=j2.mvt_x;
             j2.y+=j2.mvt_y;
-            
+
 
             if(j1.y+j1.h>SCREEN_HEIGHT-170)
                   {
@@ -128,36 +149,74 @@ int main ( int argc, char** argv )
                   }
 
 
-            
+
             if(j2.y+j2.h>SCREEN_HEIGHT-170)
-                  {
-                     j2.y=SCREEN_HEIGHT-170-j2.h;
-                     j2.mvt_y*=-1;
-                  }
+            {
+                j2.y=SCREEN_HEIGHT-170-j2.h;
+                j2.mvt_y*=-1;
+            }
             if(j2.y<0)
-                  {
-                     j2.y=0;
-                     j2.mvt_y*=-1;
-                  }
+            {
+                j2.y=0;
+                j2.mvt_y*=-1;
+            }
             if(j2.x+j2.w>SCREEN_WIDTH)
-                  {
-                     j2.x=SCREEN_WIDTH-j2.w;
-                     j2.mvt_x*=-1;
-                  }
+            {
+                j2.x=SCREEN_WIDTH-j2.w;
+                j2.mvt_x*=-1;
+            }
             if(j2.x<0)
-                  {
-                     j2.x=0;
-                     j2.mvt_x*=-1;
-                  }
-            
-            
+            {
+                j2.x=0;
+                j2.mvt_x*=-1;
+            }
+
+            while(SDL_PollEvent(&event))
+            {
+                if( event.type == SDL_QUIT )
+                {
+                    quit = true;
+                }
+                else if( event.type == SDL_MOUSEBUTTONDOWN )
+                {
+
+                    int mx = event.button.x;
+                    int my = event.button.y;
+
+                    switch(event.button.button)
+                    {
+                    case SDL_BUTTON_LEFT:
+                        nbBall-=1;
+                        break;
+                    }
+
+                    if(toucher(j1, mx, my))
+                    {
+                        changerTouche(j1);
+                        j1.mvt_x=0;
+                        j1.mvt_y=1;
+                        score+=plusPoints(j1);
+                    }
+                    if(toucher(j2, mx, my))
+                    {
+                        changerTouche(j2);
+                        j2.mvt_x=0;
+                        j2.mvt_y=1;
+                        score+=plusPoints(j2);
+                    }
+
+                }
+            }
+
+
             SDL_Flip(screen);
             SDL_FreeSurface(screen);
             SDL_Flip(screen);
-            
+
         }
 
         SDL_FreeSurface(screen);
         SDL_Flip(screen);
         SDL_Quit();
     }
+
