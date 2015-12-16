@@ -1,0 +1,309 @@
+#include "duckhunt.h"
+
+
+int main (int argc, char **argv)
+{
+    bool quit=false;
+    SDL_Surface *screen, *ecran, *background, *reticule;
+    SDL_Event event;
+    TTF_Init();
+    TTF_Font *fonts;
+    int fontSize=50;
+    string police="duck_hunt.ttf";
+    SDL_Color textColor= {255,255,255};
+    fonts = TTF_OpenFont(police.c_str(),fontSize);
+    SDL_Init(SDL_INIT_EVERYTHING);
+    screen=SDL_SetVideoMode(SCREEN_WIDTH,SCREEN_HEIGHT,
+                            SCREEN_BPP,SDL_SWSURFACE);
+    ecran=load_image("menu1.bmp");
+    background=load_image("back.bmp");
+    reticule=loadImageWithColorKey("reticule.bmp",255,255,255);
+
+    int score = 0;
+    int nbBall = 3;
+    int menu = 0;
+    int select=0;
+    int nbCanard=0;
+    int nbCtouch=0;
+    int compteur1 = 0;
+    int compteur2 = 0;
+    int compteur3 = 0;
+
+    Souris souris;
+
+    canard j1;
+    initCanard(j1);
+    srand(time(NULL));
+    moveK(j1);
+
+    canard j2;
+    initCanard(j2);
+    moveK(j2);
+    nbCanard+=2;
+
+    bool t1=toucher(j1,souris);
+    bool t2=toucher(j1,souris);
+
+    while(!quit)
+    {
+        showK(j1,t1,compteur1,screen);
+        showK(j2,t2,compteur2,screen);
+        compteur1++;
+        compteur2++;
+    }
+}
+
+
+
+/*    while (!quit && menu==0)
+    {
+        SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
+        applySurface(0,0,ecran,screen,NULL);
+
+
+        ostringstream mssg;
+        ostringstream mssg1;
+        ostringstream mssg2;
+        ostringstream mssg3;
+
+        mssg.flush();
+        mssg.str("mode classique");
+        mssg1.flush();
+        mssg1.str("quit");
+        mssg2.flush();
+        mssg2.str("DUCK HUNT");
+        mssg3.flush();
+        mssg3.str("-->");
+
+        showMessageScreen(mssg.str(),190,250,fonts,fontSize,textColor,screen);
+        showMessageScreen(mssg1.str(),320,310,fonts,fontSize,textColor,screen);
+        showMessageScreen(mssg2.str(),10,10,fonts,fontSize,textColor,screen);
+
+        while(SDL_PollEvent(&event))
+            if(event.type==SDL_QUIT)
+                quit=true;
+
+        Uint8 *keystates = SDL_GetKeyState( NULL );
+
+        if (keystates[ SDLK_UP ])
+        {
+
+            showMessageScreen(mssg3.str(),130,250,fonts,fontSize,textColor,screen);
+            select=1;
+
+        }
+        if (keystates[ SDLK_DOWN ])
+        {
+
+            showMessageScreen(mssg3.str(),250,310,fonts,fontSize,textColor,screen);
+            select=2;
+        }
+
+        else if(event.type == SDL_KEYUP )
+        {
+            switch( event.key.keysym.sym )
+            {
+            case SDLK_UP: showMessageScreen(mssg3.str(),130,250,fonts,fontSize,textColor,screen); break;
+            case SDLK_DOWN: showMessageScreen(mssg3.str(),250,310,fonts,fontSize,textColor,screen); break;
+            }
+        }
+        if ((keystates[ SDLK_RETURN]) && select==1)
+        {
+            menu=1;
+        }
+        if ((keystates[ SDLK_RETURN]) && select==2)
+        {
+            quit=true;
+        }
+
+        SDL_Flip(screen);
+    }
+
+    while (!quit && menu==1)
+    {
+        SDL_FillRect(screen,&screen->clip_rect, SDL_MapRGB(screen->format,61, 43, 31));
+        applySurface(0,0,background,screen,NULL);
+        //applySurface(j1.x,j1.y,j1.source,screen, &j1.lecture);
+        //applySurface(j2.x,j2.y,j2.source,screen, &j2.lecture);
+
+        bool t1=false;
+        bool t2=false;
+        bool t3=false;
+        t1=toucher(j1, souris);
+        t2=toucher(j2, souris);
+        t3=toucher(j3, souris);
+
+        moveK(j1);
+        moveK(j2);
+        moveK(j3);
+
+
+        showK(j1,t1,screen);
+        showK(j2,t2,screen);
+        showK(j3,t3,screen);
+
+
+        ostringstream mssg;
+        ostringstream ball;
+        ostringstream s;
+        ostringstream canard;
+        ostringstream ca;
+        ostringstream c;
+        mssg.flush();
+        mssg.str("");
+        mssg <<  score;
+
+        ball.flush();
+        ball.str("");
+        ball <<  nbBall;
+
+        s.flush();
+        s.str("Score = ");
+
+        canard.flush();
+        canard << nbCanard;
+
+        ca.flush();
+        ca << nbCtouch;
+
+        c.str("____");
+
+        showMessageScreen(mssg.str(),400,750,fonts,fontSize,textColor,screen);
+        showMessageScreen(s.str(),200,750,fonts,fontSize,textColor,screen);
+        showMessageScreen(ball.str(),50,750,fonts,fontSize,textColor,screen);
+        showMessageScreen(canard.str(),750,750,fonts,fontSize,textColor,screen);
+        showMessageScreen(ca.str(),750,700,fonts,fontSize,textColor,screen);
+        showMessageScreen(c.str(),735,701,fonts,fontSize,textColor,screen);
+
+
+        /*j1.x+=j1.mvt_x;
+        j1.y+=j1.mvt_y;
+        j2.x+=j2.mvt_x;
+        j2.y+=j2.mvt_y;
+        j3.x+=j3.mvt_x;
+        j3.y+=j3.mvt_y;*/
+
+
+/*SDL_ShowCursor(0);
+
+if(event.type==SDL_MOUSEMOTION)
+{         souris.x=event.motion.x;
+    souris.y=event.motion.y;
+
+}
+showReticule(souris,reticule,screen);*/
+
+/*if(col1==true)
+{
+    if(j1.y+j1.h>SCREEN_HEIGHT-170)
+    {
+        j1.y=SCREEN_HEIGHT-170-j1.h;
+        j1.mvt_y*=-1;
+    }
+    if(j1.y<0)
+    {
+        j1.y=0;
+        j1.mvt_y*=-1;
+    }
+    if(j1.x+j1.w>SCREEN_WIDTH)
+    {
+        j1.x=SCREEN_WIDTH-j1.w;
+        j1.mvt_x*=-1;
+    }
+    if(j1.x<0)
+    {
+        j1.x=0;
+        j1.mvt_x*=-1;
+    }
+}
+
+if (col2==true)
+{
+    if(j2.y+j2.h>SCREEN_HEIGHT-170)
+    {
+        j2.y=SCREEN_HEIGHT-170-j2.h;
+        j2.mvt_y*=-1;
+    }
+    if(j2.y<0)
+    {
+        j2.y=0;
+        j2.mvt_y*=-1;
+    }
+    if(j2.x+j2.w>SCREEN_WIDTH)
+    {
+        j2.x=SCREEN_WIDTH-j2.w;
+        j2.mvt_x*=-1;
+    }
+    if(j2.x<0)
+    {
+        j2.x=0;
+        j2.mvt_x*=-1;
+    }
+    showK(j3,t3,screen);
+}*/
+
+
+/*if ( nbBall!=0)
+{
+    while(SDL_PollEvent(&event))
+    {
+        if( event.type == SDL_QUIT )
+        {
+            quit = true;
+        }
+
+        else if( event.type == SDL_MOUSEBUTTONDOWN )
+        {
+            int mx = event.button.x;
+            int my = event.button.y;
+
+            switch(event.button.button)
+            {
+            case SDL_BUTTON_LEFT:
+                nbBall-=1;
+                break;
+            }
+            if(toucher(j1, souris))
+            {
+                changerTouche(j1);
+                j1.mvt_x=0;
+                j1.mvt_y=1;
+                score+=plusPoints(j1);
+                nbCtouch+=1;
+                col1=false;
+            }
+            if(toucher(j2, souris))
+            {
+                changerTouche(j2);
+                j2.mvt_x=0;
+                j2.mvt_y=1;
+                score+=plusPoints(j2);
+                nbCtouch+=1;
+                col2=false;
+            }
+        }
+
+    }
+}
+if (nbBall==0 && col1==true)
+{
+    j1.mvt_y=-1;
+    j1.mvt_x=0;
+    col1=false;
+}
+if (nbBall==0 && col2==true)
+{
+    j2.mvt_y=-1;
+    j2.mvt_x=0;
+    col2=false;
+}
+
+SDL_Delay(2);
+SDL_Flip(screen);
+}
+SDL_FreeSurface(screen);
+SDL_Flip(screen);
+SDL_Quit();
+}
+
+*/
