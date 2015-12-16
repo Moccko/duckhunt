@@ -1,0 +1,73 @@
+#ifndef DUCKHUNT_H
+#define DUCKHUNT_H
+
+
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
+#include <sstream>
+#include <ctime>
+
+using namespace std;
+
+
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 800;
+const int SCREEN_BPP=32;
+const int NB_CANARD_TO_WIN = 6;
+const int NB_CANARD_PAR_NIVEAU = 10;
+const int tailleRet=50;
+
+
+SDL_Surface *load_image( std::string filename );
+SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b);
+void applySurface(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
+void showMessageScreen(string message,int x,int y, TTF_Font *font,int fontSize,SDL_Color textColor,SDL_Surface* &screen);
+struct canard
+{
+    int c;  //0 noir 1 rouge et 2 bleu
+    int v;  //vitesse du canard (pour gérer son déplacement)
+    int x;       //position x sur le champ de tir
+    int y;       //position y sur le champ de tir
+    int w;
+
+    int h;
+    int mvt_x;
+    int mvt_y;
+    int point;
+    SDL_Surface *sourceR;
+    SDL_Surface *sourceL;
+    SDL_Rect lecture1;
+    SDL_Rect lecture2;
+    SDL_Rect lecture3;
+    SDL_Rect lecture4;
+    SDL_Rect lecture5;
+    SDL_Rect lecture6;
+    SDL_Rect lecture7;
+    SDL_Rect lecture8;
+    SDL_Rect lecture9;
+    SDL_Rect lecture10;
+};
+struct Souris
+{
+    int x;
+    int y;
+};
+void initCanard(canard &c);
+bool toucher (canard c, Souris m);
+void changerTouche (canard c);
+int plusPoints (canard c);
+int SDL_ShowCursor(int toggle);
+void showReticule(Souris &r, SDL_Surface *pointeur, SDL_Surface *screen);
+bool collision(canard k);
+void moveK (canard &k);
+void showK(canard k, bool touch, int &compteur, SDL_Surface *screen);
+
+
+
+
+
+#endif // DUCKHUNT_H
