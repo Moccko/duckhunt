@@ -1,0 +1,619 @@
+#include "duckhunt.h"
+#include "sprites.h"
+
+SDL_Surface *load_image( std::string filename )
+{
+    SDL_Surface* loadedImage = NULL;
+    SDL_Surface* optimizedImage = NULL;
+    loadedImage = SDL_LoadBMP( filename.c_str() );
+    if( loadedImage != NULL )
+    {
+        optimizedImage = SDL_DisplayFormat( loadedImage );
+        SDL_FreeSurface( loadedImage );
+    }
+    return optimizedImage;
+}
+
+SDL_Surface *loadImageWithColorKey(string filename, int r, int g, int b)
+{
+    SDL_Surface* loadedImage = NULL;
+    SDL_Surface* optimizedImage = NULL;
+    loadedImage = IMG_Load( filename.c_str() );
+    if( loadedImage != NULL )
+    {
+        optimizedImage = SDL_DisplayFormat( loadedImage );
+        SDL_FreeSurface( loadedImage );
+        if( optimizedImage != NULL )
+        {
+            Uint32 colorkey = SDL_MapRGB( optimizedImage->format, r, g, b );
+            SDL_SetColorKey( optimizedImage, SDL_SRCCOLORKEY, colorkey );
+        }
+    }
+    return optimizedImage;
+}
+
+void applySurface(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip)
+{
+    SDL_Rect offset;
+    offset.x = x;
+    offset.y = y;
+    SDL_BlitSurface( source, clip, destination, &offset );
+}
+
+void showMessageScreen(string message,int x,int y, TTF_Font *font,int fontSize,SDL_Color textColor,SDL_Surface* &screen)
+{
+    string mot="";
+    string space=" ";
+    int i=0,j;
+    SDL_Surface *mes=NULL;
+
+    j = message.find(space);
+    while( j != string::npos )
+    {
+        mot=message.substr(i,j-i);
+        if(mot != "")
+        {
+            mes=TTF_RenderText_Solid(font,mot.c_str(),textColor);
+            applySurface(x,y,mes,screen,NULL);
+            x+=mes->w;
+            SDL_FreeSurface(mes);
+        }
+        x+=fontSize;
+        i=j+1;
+        j = message.find(space,i);
+    }
+
+    mot=message.substr(i);
+    mes=TTF_RenderText_Solid(font,mot.c_str(),textColor);
+    applySurface(x,y,mes,screen,NULL);
+    SDL_FreeSurface(mes);
+}
+
+
+void initCanard(canard &c)
+{
+    c.x=rand()%SCREEN_WIDTH/*-50*/;
+    c.y=rand()%SCREEN_HEIGHT/*r-100*/;
+    c.h=49;
+    c.w=53;
+    c.c=rand()%3;
+    if (c.c==0)
+    {
+        c.sourceR=loadImageWithColorKey("k1.bmp", 144, 208, 136);
+        c.sourceL=loadImageWithColorKey("k1gauche.bmp", 144, 208, 136);
+        c.mvt_x=1;
+        c.mvt_y=1;
+        c.point=500;
+        c.lecture1.x=3;
+        c.lecture1.y=3;
+        c.lecture1.w=72;
+        c.lecture1.h=72;
+        c.lecture2.x=77;
+        c.lecture2.y=2;
+        c.lecture2.w=72;
+        c.lecture2.h=72;
+        c.lecture3.x=171;
+        c.lecture3.y=3;
+        c.lecture3.w=72;
+        c.lecture3.h=72;
+        c.lecture4.x=293;
+        c.lecture4.y=3;
+        c.lecture4.w=72;
+        c.lecture4.h=72;
+        c.lecture5.x=521;
+        c.lecture5.y=3;
+        c.lecture5.w=72;
+        c.lecture5.h=72;
+        c.lecture6.x=565;
+        c.lecture6.y=3;
+        c.lecture6.w=72;
+        c.lecture6.h=72;
+        c.lecture7.x=675;
+        c.lecture7.y=3;
+        c.lecture7.w=72;
+        c.lecture7.h=72;
+        c.lecture8.x=3;
+        c.lecture8.y=80;
+        c.lecture8.w=72;
+        c.lecture8.h=71;
+        c.lecture9.x=153;
+        c.lecture9.y=79;
+        c.lecture9.w=82;
+        c.lecture9.h=82;
+        c.lecture10.x=241;
+        c.lecture10.y=80;
+        c.lecture10.w=81;
+        c.lecture10.h=80;
+    }
+    else if (c.c==1)
+    {
+        c.sourceR=loadImageWithColorKey("k2.bmp", 144, 208, 136);
+        c.sourceL=loadImageWithColorKey("k2gauche.bmp", 144, 208, 136);
+        c.mvt_x=2;
+        c.mvt_y=2;
+        c.point=1000;
+        c.lecture1.x=3;
+        c.lecture1.y=3;
+        c.lecture1.w=72;
+        c.lecture1.h=72;
+        c.lecture2.x=77;
+        c.lecture2.y=2;
+        c.lecture2.w=72;
+        c.lecture2.h=72;
+        c.lecture3.x=171;
+        c.lecture3.y=3;
+        c.lecture3.w=72;
+        c.lecture3.h=72;
+        c.lecture4.x=293;
+        c.lecture4.y=3;
+        c.lecture4.w=72;
+        c.lecture4.h=72;
+        c.lecture5.x=521;
+        c.lecture5.y=3;
+        c.lecture5.w=72;
+        c.lecture5.h=72;
+        c.lecture6.x=565;
+        c.lecture6.y=3;
+        c.lecture6.w=72;
+        c.lecture6.h=72;
+        c.lecture7.x=675;
+        c.lecture7.y=3;
+        c.lecture7.w=72;
+        c.lecture7.h=72;
+        c.lecture8.x=3;
+        c.lecture8.y=80;
+        c.lecture8.w=72;
+        c.lecture8.h=71;
+        c.lecture9.x=153;
+        c.lecture9.y=79;
+        c.lecture9.w=82;
+        c.lecture9.h=82;
+        c.lecture10.x=241;
+        c.lecture10.y=80;
+        c.lecture10.w=81;
+        c.lecture10.h=80;
+    }
+    else
+    {
+        c.sourceR=loadImageWithColorKey("k3.bmp", 144, 208, 136);
+        c.sourceL=loadImageWithColorKey("k3gauche.bmp", 144, 208, 136);
+        c.mvt_x=3;
+        c.mvt_y=3;
+        c.point=1500;
+        c.lecture1.x=16;
+        c.lecture1.y=0;
+        c.lecture1.w=104;
+        c.lecture1.h=115;
+        c.lecture2.x=77;
+        c.lecture2.y=2;
+        c.lecture2.w=72;
+        c.lecture2.h=72;
+        c.lecture3.x=171;
+        c.lecture3.y=3;
+        c.lecture3.w=72;
+        c.lecture3.h=72;
+        c.lecture4.x=293;
+        c.lecture4.y=3;
+        c.lecture4.w=72;
+        c.lecture4.h=72;
+        c.lecture5.x=521;
+        c.lecture5.y=3;
+        c.lecture5.w=72;
+        c.lecture5.h=72;
+        c.lecture6.x=595;
+        c.lecture6.y=3;
+        c.lecture6.w=72;
+        c.lecture6.h=72;
+        c.lecture7.x=675;
+        c.lecture7.y=3;
+        c.lecture7.w=72;
+        c.lecture7.h=72;
+        c.lecture8.x=3;
+        c.lecture8.y=80;
+        c.lecture8.w=72;
+        c.lecture8.h=71;
+        c.lecture9.x=153;
+        c.lecture9.y=79;
+        c.lecture9.w=82;
+        c.lecture9.h=82;
+        c.lecture10.x=241;
+        c.lecture10.y=80;
+        c.lecture10.w=81;
+        c.lecture10.h=80;
+    }
+}
+
+bool toucher (canard c, Souris m)
+{
+    if ((m.x<c.x+c.w) && (m.x>c.x) && (m.y<c.y+c.h) && (m.y>c.y))
+        return true;
+    else
+        return false;
+}
+
+
+/*void changerTouche (canard c)
+{
+    if(c.c==0)
+    {
+        c.lectureFront.x=0;
+        c.lectureFront.y=60;
+        c.lectureFront.w=41;
+        c.lectureFront.h=37;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k1.bmp",144, 208, 136);
+    }
+
+
+    else if(c.c==1)
+    {
+        c.lectureFront.x=180;
+        c.lectureFront.y=0;
+        c.lectureFront.w=29;
+        c.lectureFront.h=55;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k2.bmp",144, 208, 136);
+    }
+
+    else
+    {
+        c.lectureFront.x=255;
+        c.lectureFront.y=0;
+        c.lectureFront.w=45;
+        c.lectureFront.h=52;
+        c.lecture = c.lectureFront;
+        c.source=loadImageWithColorKey("k3.bmp",144, 208, 136);
+    }
+}*/
+
+int plusPoints (canard c)
+{
+    if(c.c==0)
+        return 500;
+    else if(c.c==1)
+        return 1000;
+    else
+        return 1500;
+}
+
+
+int SDL_ShowCursor(int toggle);
+
+void showReticule(Souris &r, SDL_Surface *pointeur, SDL_Surface *screen)
+{
+    applySurface(r.x-tailleRet/2,r.y-tailleRet/2,pointeur,screen,NULL);
+}
+
+bool collision(canard k)
+{
+    int leftK, rightK, topK, bottomK;
+
+    leftK = k.x;
+    rightK = k.x + k.w;
+    topK = k.y;
+    bottomK = k.y + k.h;
+
+    if(leftK>0)
+        return false;
+    if(rightK<SCREEN_WIDTH)
+        return false;
+    if(topK>0)
+        return false;
+    if(bottomK<SCREEN_HEIGHT-170)
+        return false;
+    else
+        return true;
+}
+
+void moveK (canard &k)
+{
+    bool clsn;
+    k.x+=k.mvt_x;
+    k.y+=k.mvt_y;
+    clsn=collision(k);
+
+    if ((clsn && k.mvt_x<0)||(clsn && k.mvt_x>SCREEN_WIDTH))
+    {
+        k.y-=k.mvt_x;
+        k.mvt_x*=-1;
+    }
+    else if ((clsn && k.mvt_y<0)||(clsn && k.mvt_y>SCREEN_HEIGHT))
+    {
+        k.y-=k.mvt_y;
+        k.mvt_y*=-1;
+    }
+}
+
+void showK(canard k, bool touch, int &compteur, SDL_Surface *screen)
+{
+    SDL_Surface *normalD=loadImageWithColorKey("k1.bmp",0,255,0);
+    SDL_Surface *normalG=loadImageWithColorKey("k1gauche.bmp",0,255,0);
+    SDL_Surface *linkD=loadImageWithColorKey("k2.bmp",0,255,0);
+    SDL_Surface *linkG=loadImageWithColorKey("k2gauche.bmp",0,255,0);
+    SDL_Surface *metaD=loadImageWithColorKey("k3.bmp",0,255,0);
+    SDL_Surface *metaG=loadImageWithColorKey("k3gauche.bmp",0,255,0);
+
+
+
+
+
+    if (!touch)
+    {
+        if (k.c==0)
+        {
+            if((k.mvt_x>=0)&&(k.mvt_y<=0)) // si le monte à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%3;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y<=0)) // si le monte à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%7;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x>=0)&&(k.mvt_y>=0)) // si le descend à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y>=0)) // si le descend à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+        }
+        if (k.c==1)
+        {
+            if((k.mvt_x>=0)&&(k.mvt_y<=0)) // si le monte à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%3;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y<=0)) // si le monte à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%7;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x>=0)&&(k.mvt_y>=0)) // si le descend à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y>=0)) // si le descend à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+        }
+        if (k.c==2)
+        {
+            if((k.mvt_x>=0)&&(k.mvt_y<=0)) // si le monte à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%3;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y<=0)) // si le monte à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture1);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture2);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture3);
+                }
+                compteur=(compteur+1)%7;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x>=0)&&(k.mvt_y>=0)) // si le descend à droite on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceR,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+            if((k.mvt_x<=0)&&(k.mvt_y>=0)) // si le descend à gauche on affiche ça
+            {
+                switch(compteur)
+                {
+                case 0:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture8);
+                    break;
+                case 1:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture9);
+                    break;
+                case 2:
+                    applySurface(k.x,k.y,k.sourceL,screen,&k.lecture10);
+                }
+                compteur=(compteur+1)%5;
+                SDL_Flip(screen);
+            }
+        }
+    }
+    /*  if(touch)
+      {
+          if (k.c==0)
+          {
+              switch(compteur)
+                  {
+                  case 0:applySurface(k.x,k.y,normalD,screen,&lectureNormal1);break;
+                  case 1:applySurface(k.x,k.y,normalD,screen,&lectureNormal2);break;
+                  case 2:applySurface(k.x,k.y,normalD,screen,&lectureNormal3);
+                  }
+                  compteur=(compteur+1)%7;
+                  SDL_Flip(screen);
+              }
+          }
+          if (k.c==1)
+          {
+              if((k.mvt_x>=0)&&(k.mvt_y<=0)) // si le monte à droite on affiche ça
+              {
+                  switch(compteur)
+                  {
+                  case 0:applySurface(k.x,k.y,linkD,screen,&lectureLink1);break;
+                  case 1:applySurface(k.x,k.y,linkD,screen,&lectureLink2);break;
+                  case 2:applySurface(k.x,k.y,linkD,screen,&lectureLink3);break;
+                  case 3:applySurface(k.x,k.y,linkD,screen,&lectureLink4);break;
+                  case 4:applySurface(k.x,k.y,linkD,screen,&lectureLink5);break;
+                  case 5:applySurface(k.x,k.y,linkD,screen,&lectureLink6);break;
+                  case 6:applySurface(k.x,k.y,linkD,screen,&lectureLink7);
+                  }
+                  SDL_Flip(screen);
+                  compteur=(compteur+1)%7;
+              }
+              if((k.mvt_x<=0)&&(k.mvt_y<=0)) // si le monte à gauche on affiche ça
+              {
+                  switch(compteur)
+                  {
+                  case 0:applySurface(k.x,k.y,linkG,screen,&lectureLink1);break;
+                  case 1:applySurface(k.x,k.y,linkG,screen,&lectureLink2);break;
+                  case 2:applySurface(k.x,k.y,linkG,screen,&lectureLink3);break;
+                  case 3:applySurface(k.x,k.y,linkG,screen,&lectureLink4);break;
+                  case 4:applySurface(k.x,k.y,linkG,screen,&lectureLink5);break;
+                  case 5:applySurface(k.x,k.y,linkG,screen,&lectureLink6);break;
+                  case 6:applySurface(k.x,k.y,linkG,screen,&lectureLink7);
+                  }
+                  SDL_Flip(screen);
+                  compteur=(compteur+1)%7;
+              }
+              if((k.mvt_x>=0)&&(k.mvt_y>=0)) // si le descend à droite on affiche ça
+              {
+                  switch(compteur)
+                  {
+                  case 0:applySurface(k.x,k.y,linkD,screen,&lectureLink8);break;
+                  case 1:applySurface(k.x,k.y,linkD,screen,&lectureLink9);break;
+                  case 2:applySurface(k.x,k.y,linkD,screen,&lectureLink10);break;
+                  case 3:applySurface(k.x,k.y,linkD,screen,&lectureLink11);break;
+                  case 4:applySurface(k.x,k.y,linkD,screen,&lectureLink12);
+                  }
+                  SDL_Flip(screen);
+                  compteur=(compteur+1)%5;
+              }
+              if((k.mvt_x<=0)&&(k.mvt_y>=0)) // si le descend à gauche on affiche ça
+              {
+                  switch(compteur)
+                  {
+                  case 0:applySurface(k.x,k.y,linkG,screen,&lectureLink8);break;
+                  case 1:applySurface(k.x,k.y,linkG,screen,&lectureLink9);break;
+                  case 2:applySurface(k.x,k.y,linkG,screen,&lectureLink10);break;
+                  case 3:applySurface(k.x,k.y,linkG,screen,&lectureLink11);break;
+                  case 4:applySurface(k.x,k.y,linkG,screen,&lectureLink12);
+                  }
+                  SDL_Flip(screen);
+                  compteur=(compteur+1)%5;
+              }
+          }
+          if (k.c==2)
+      }*/
+}
