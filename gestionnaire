@@ -1,0 +1,87 @@
+#!/bin/bash
+echo "Menu:
+	option :
+		-h: information
+		-v: Voir
+		-e: Editer
+		-g: Générer
+		-l: Lancer
+		-d: Débugger
+		-i: imprimer
+		-s: Shell
+		-q: quitter"
+echo "Votre Réponse:"
+read reponse
+while ([ -z $reponse ] || [ $reponse != "exit" ] )
+do
+
+
+if ! test -f "$1"
+then
+	touch $1
+	echo "Le fichier a ete correctement cree avec le template suivant"
+	echo '#include <iostream>'>$1
+	echo 'using namespace std;'>>$1
+	echo 'int main(int argc, char** argv) {'>>$1
+	echo 'cout << "Hello World" <<endl;'>>$1
+	echo 'return 0; }'>>$1
+fi
+
+
+case "$reponse" in
+-h)
+	echo "Usage: ./Projet.sh [fichier]
+	[fichier] est un fichier C++ existant ou pas,
+ 	donné avec l'extention" ;;
+-v)
+	cat $1;;
+
+-e)
+	gedit $1 &;;
+-g)	
+	g++ -Wall -c $1 &
+	if [ $? = 0 ]
+	then
+		echo "Le fichier $1 a ete correctement compile"
+	else
+		echo "Erreur(s) de compilation"
+	fi;;
+-l)
+	if test -x "$1"
+	then
+		$1
+	else
+		echo " Le fichier n'est pas executable, générer avant de lancer"
+	fi ;;
+-d)
+	g++ -g $1 -o debug_$1
+	gdb debug_$1;;
+-i)
+	a2ps -o cpp.ps $1
+	ps2pdf cpp.ps cpp.pdf
+	echo Le fichier pdf a été enregistré sous le nom "cpp.pdf";;
+-s)
+	echo "Entrer exit pour revenir au prompt initial"
+	xterm;;
+-q)
+	exit;;
+esac
+echo " "
+echo "Menu:
+        option :
+                -h: information
+                -v: Voir
+                -e: Editer
+                -g: Générer
+                -l: Lancer
+                -d: Débugger
+                -i: imprimer
+                -s: Shell
+                -q: quitter"
+echo " "
+echo "Votre Réponse:"
+
+read reponse
+
+done
+
